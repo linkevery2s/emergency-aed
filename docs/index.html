@@ -1,0 +1,611 @@
+<!DOCTYPE HTML>
+<html lang="ja">
+<title>救急AEDノベルゲーム</title>
+
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="UTF-8" name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta property="og:title" content="救急AEDノベルゲーム" />
+  <meta property="og:url" content="https://linkevery2s.github.io/emergency-aed/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://linkevery2s.github.io/emergency-aed/ogp.png" />
+  <meta name="description" content="救急やAEDの使い方をBODIK APIやオープンデータを活用して、ノベルゲームで学習するアプリケーションです。" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="救急AEDノベルゲーム" />
+  <meta name="twitter:image" content="https://linkevery2s.github.io/emergency-aed/ogp.png" />
+  <meta name="author" content="Saito Hitoshi">
+  <meta name="keywords" content="救急,aed,AED,BoDIK,ノベルゲーム" />
+  <link rel="apple-touch-icon" href="./images/apple-touch-icon.png">
+  <link rel="icon" href="./images/apple-touch-icon.png">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"
+    integrity="sha512-GWzVrcGlo0TxTRvz9ttioyYJ+Wwk9Ck0G81D+eO63BaqHaJ3YZX9wuqjwgfcV/MrB2PhaVX9DkYVhbFpStnqpQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+  <link rel="manifest" href="./manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./service-worker.js').then(function () {
+        console.log('Service Worker Registered');
+      });
+    }
+  </script>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    body {
+      color: #ffffff;
+      font-family: "Source Han Serif JP", "Noto Serif CJK JP", "游明朝体", "Yu Mincho", YuMincho, serif;
+      background-attachment: fixed;
+      background-image: url("./images/background.jpg");
+      background-position: top center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+
+    /* iOS用  */
+    body::before {
+      content: "";
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      width: 100%;
+      height: 100vh;
+      background-repeat: no-repeat;
+      background-position: top center;
+      background-image: url("./images/background.jpg");
+      background-size: cover;
+    }
+
+    .nav_button {
+      border: 2px solid darkorange;
+      width: 250px;
+      border-radius: 5em;
+      cursor: pointer;
+    }
+
+    .menu3 {
+      position: relative;
+      left: -50px;
+      color: #ff0;
+    }
+
+    .menu4 {
+      position: relative;
+      right: -50px;
+      color: #ff0;
+    }
+
+    .menu5 {
+      position: relative;
+      left: -17px;
+      color: #ff0;
+    }
+
+    .menu6 {
+      position: relative;
+      right: -17px;
+      color: #ff0;
+    }
+
+    iframe {
+      margin: 0;
+      padding: 0;
+      border: none;
+      top: 50%;
+      left: 50%;
+      position: absolute;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      border-radius: .3em;
+
+    }
+
+    #overlay {
+      width: 100%;
+      height: 120vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: rgba(0, 0, 0, .8);
+      display: none;
+      z-index: 2;
+    }
+
+    #beginner,
+    #manual,
+    #animal,
+    #plant,
+    #opendata {
+      display: none;
+      height: 95%;
+      max-height: 800px;
+      left: 50%;
+      position: fixed;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, .9);
+      width: 95%;
+      max-width: 600px;
+      z-index: 11;
+      padding: .3em;
+      border-radius: .3em;
+    }
+
+    #closed-btn,
+    #closed-btn2,
+    #closed-btn3,
+    #closed-btn4,
+    #closed-btn5 {
+      position: absolute;
+      right: 4px;
+      color: #ffffff;
+      background: #1e50a2;
+      cursor: pointer;
+      text-align: center;
+      font-weight: bolder;
+      border-radius: .3em;
+      z-index: 12;
+    }
+
+    #closed-btn:hover,
+    #closed-btn2:hover,
+    #closed-btn3:hover,
+    #closed-btn4:hover,
+    #closed-btn5:hover {
+      background: #ffffff;
+      color: #1e50a2;
+      border: 1px solid #1e50a2;
+    }
+
+    /* From Uiverse.io by Nawsome */
+    .loadingspinner {
+      --square: 26px;
+      --offset: 30px;
+      --duration: 2.4s;
+      --delay: 0.2s;
+      --timing-function: ease-in-out;
+      --in-duration: 0.4s;
+      --in-delay: 0.1s;
+      --in-timing-function: ease-out;
+      width: calc(3 * var(--offset) + var(--square));
+      height: calc(2 * var(--offset) + var(--square));
+      padding: 0px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 10px;
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .loadingspinner div {
+      display: inline-block;
+      background: darkorange;
+      /*background: var(--text-color);*/
+      /*box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);*/
+      border: none;
+      border-radius: 2px;
+      width: var(--square);
+      height: var(--square);
+      position: absolute;
+      padding: 0px;
+      margin: 0px;
+      font-size: 6pt;
+      color: black;
+    }
+
+    .loadingspinner #square1 {
+      left: calc(0 * var(--offset));
+      top: calc(0 * var(--offset));
+      animation: square1 var(--duration) var(--delay) var(--timing-function) infinite,
+        squarefadein var(--in-duration) calc(1 * var(--in-delay)) var(--in-timing-function) both;
+    }
+
+    .loadingspinner #square2 {
+      left: calc(0 * var(--offset));
+      top: calc(1 * var(--offset));
+      animation: square2 var(--duration) var(--delay) var(--timing-function) infinite,
+        squarefadein var(--in-duration) calc(1 * var(--in-delay)) var(--in-timing-function) both;
+    }
+
+    .loadingspinner #square3 {
+      left: calc(1 * var(--offset));
+      top: calc(1 * var(--offset));
+      animation: square3 var(--duration) var(--delay) var(--timing-function) infinite,
+        squarefadein var(--in-duration) calc(2 * var(--in-delay)) var(--in-timing-function) both;
+    }
+
+    .loadingspinner #square4 {
+      left: calc(2 * var(--offset));
+      top: calc(1 * var(--offset));
+      animation: square4 var(--duration) var(--delay) var(--timing-function) infinite,
+        squarefadein var(--in-duration) calc(3 * var(--in-delay)) var(--in-timing-function) both;
+    }
+
+    .loadingspinner #square5 {
+      left: calc(3 * var(--offset));
+      top: calc(1 * var(--offset));
+      animation: square5 var(--duration) var(--delay) var(--timing-function) infinite,
+        squarefadein var(--in-duration) calc(4 * var(--in-delay)) var(--in-timing-function) both;
+    }
+
+    @keyframes square1 {
+      0% {
+        left: calc(0 * var(--offset));
+        top: calc(0 * var(--offset));
+      }
+
+      8.333% {
+        left: calc(0 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+
+      100% {
+        left: calc(0 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+    }
+
+    @keyframes square2 {
+      0% {
+        left: calc(0 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+
+      8.333% {
+        left: calc(0 * var(--offset));
+        top: calc(2 * var(--offset));
+      }
+
+      16.67% {
+        left: calc(1 * var(--offset));
+        top: calc(2 * var(--offset));
+      }
+
+      25.00% {
+        left: calc(1 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+
+      83.33% {
+        left: calc(1 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+
+      91.67% {
+        left: calc(1 * var(--offset));
+        top: calc(0 * var(--offset));
+      }
+
+      100% {
+        left: calc(0 * var(--offset));
+        top: calc(0 * var(--offset));
+      }
+    }
+
+    @keyframes square3 {
+
+      0%,
+      100% {
+        left: calc(1 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+
+      16.67% {
+        left: calc(1 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+
+      25.00% {
+        left: calc(1 * var(--offset));
+        top: calc(0 * var(--offset));
+      }
+
+      33.33% {
+        left: calc(2 * var(--offset));
+        top: calc(0 * var(--offset));
+      }
+
+      41.67% {
+        left: calc(2 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+
+      66.67% {
+        left: calc(2 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+
+      75.00% {
+        left: calc(2 * var(--offset));
+        top: calc(2 * var(--offset));
+      }
+
+      83.33% {
+        left: calc(1 * var(--offset));
+        top: calc(2 * var(--offset));
+      }
+
+      91.67% {
+        left: calc(1 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+    }
+
+    @keyframes square4 {
+      0% {
+        left: calc(2 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+
+      33.33% {
+        left: calc(2 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+
+      41.67% {
+        left: calc(2 * var(--offset));
+        top: calc(2 * var(--offset));
+      }
+
+      50.00% {
+        left: calc(3 * var(--offset));
+        top: calc(2 * var(--offset));
+      }
+
+      58.33% {
+        left: calc(3 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+
+      100% {
+        left: calc(3 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+    }
+
+    @keyframes square5 {
+      0% {
+        left: calc(3 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+
+      50.00% {
+        left: calc(3 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+
+      58.33% {
+        left: calc(3 * var(--offset));
+        top: calc(0 * var(--offset));
+      }
+
+      66.67% {
+        left: calc(2 * var(--offset));
+        top: calc(0 * var(--offset));
+      }
+
+      75.00% {
+        left: calc(2 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+
+      100% {
+        left: calc(2 * var(--offset));
+        top: calc(1 * var(--offset));
+      }
+    }
+
+    @keyframes squarefadein {
+      0% {
+        transform: scale(0.75);
+        opacity: 0.0;
+      }
+
+      100% {
+        transform: scale(1.0);
+        opacity: 1.0;
+      }
+    }
+
+    .footer a {
+      border-bottom: 1px dotted #ffffff;
+    }
+
+    .fb-iframe-widget {
+      background: #000 !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <center>
+
+    <h1 class="text-4xl mt-10 mb-10">救急AED<br>ノベルゲーム</h1>
+
+    <div class="loadingspinner">
+      <div id="square1"></div>
+      <div id="square2"></div>
+      <div id="square3"></div>
+      <div id="square4"></div>
+      <div id="square5"></div>
+    </div>
+
+    <div class="nav_button py-3 text-xl beginner"><span class="menu1"><i class="fa-regular fa-bookmark"></i></span>
+      トレーニング<span class="menu2"><i class="fa-regular fa-user"></i></span>
+    </div>
+
+    <div class="nav_button py-3 mt-5 text-xl manual menu2"><span class="menu3"><i
+          class="fa-regular fa-note-sticky"></i></span>
+      使 い 方<span class="menu4"><i class="fa-regular fa-clipboard"></i></span>
+    </div>
+
+    <div class="nav_button py-3 mt-5 text-xl opendata menu2"><span class="menu5"><i
+          class="fa-solid fa-circle-info"></i></span>オープンデータ<span class="menu6"><i
+          class="fa-solid fa-database"></i></span></div>
+
+    <img class="mt-10 mb-8" src="./qr.png" alt="QR画像">
+
+    <div class="fb-share-button" data-href="https://linkevery2s.github.io/emergency-aed/" data-layout="button_count"
+      data-size="small"></div>
+
+    <div class="footer mt-5 pb-3">
+
+      <p class="text-xs">
+        <i class="fa-regular fa-copyright"></i> <a href="https://hitoshi2s.netlify.app/" target="_blank">齋藤
+          仁志</a>. <a
+          href="https://docs.google.com/forms/d/e/1FAIpQLSf-WMoBJRTdA1bmN_SmQ-bsNGeLs1l737d3c9BUNuErjH-KBw/viewform"
+          target="_blank">お問い合わせ</a>
+      </p>
+
+    </div>
+
+  </center>
+
+  <!-- ポップアップ用のoverlay -->
+  <div id="overlay"></div>
+
+  <div id="beginner" class="text-center"><span id="closed-btn" class="py-2 px-3 text-xs">閉じる</span>
+    <iframe src="./beginner.html" width="100%" height="100%" border="0"></iframe>
+  </div>
+
+  <div id="manual" class="text-center"><span id="closed-btn4" class="py-2 px-3 text-xs">閉じる</span>
+    <iframe src="./manual.html" width="100%" height="100%" border="0"></iframe>
+  </div>
+
+  <div id="animal" class="text-center"><span id="closed-btn2" class="py-2 px-3 text-xs">閉じる</span>
+    <iframe src="./animal.html" width="100%" height="100%" border="0"></iframe>
+  </div>
+
+  <div id="plant" class="text-center"><span id="closed-btn3" class="py-2 px-3 text-xs">閉じる</span>
+    <iframe src="./plant.html" width="100%" height="100%" border="0"></iframe>
+  </div>
+
+  <div id="opendata" class="text-center"><span id="closed-btn5" class="py-2 px-3 text-xs">閉じる</span>
+    <iframe src="./opendata.html" width="100%" height="100%" border="0"></iframe>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+  <script type="module">
+
+    /* メニューポップアップ表示 */
+    const beginner_btn = document.querySelector('.beginner');
+    const manual_btn = document.querySelector('.manual');
+    const animal_btn = document.querySelector('.animal');
+    const plant_btn = document.querySelector('.plant');
+    const opendata_btn = document.querySelector('.opendata');
+
+    beginner_btn.addEventListener('click', () => {
+      $('#overlay').fadeIn();
+      $('#beginner').fadeIn();
+    });
+
+    manual_btn.addEventListener('click', () => {
+      $('#overlay').fadeIn();
+      $('#manual').fadeIn();
+    });
+
+    animal_btn.addEventListener('click', () => {
+      $('#overlay').fadeIn();
+      $('#animal').fadeIn();
+    });
+
+    plant_btn.addEventListener('click', () => {
+      $('#overlay').fadeIn();
+      $('#plant').fadeIn();
+    });
+
+    opendata_btn.addEventListener('click', () => {
+      $('#overlay').fadeIn();
+      $('#opendata').fadeIn();
+    });
+
+    const overlay = document.querySelector('#overlay');
+    const closed_btn = document.querySelector("#closed-btn");
+    const closed_btn2 = document.querySelector("#closed-btn2");
+    const closed_btn3 = document.querySelector("#closed-btn3");
+    const closed_btn4 = document.querySelector("#closed-btn4");
+    const closed_btn5 = document.querySelector("#closed-btn5");
+
+
+    overlay.addEventListener('click', () => {
+      $('#overlay').fadeOut();
+      $('#animal').fadeOut();
+      $('#beginner').fadeOut();
+      $('#manual').fadeOut();
+      $('#plant').fadeOut();
+      $('#opendata').fadeOut();
+
+    });
+
+    closed_btn.addEventListener('click', () => {
+      $('#overlay').fadeOut();
+      $('#beginner').fadeOut();
+    });
+
+    closed_btn2.addEventListener('click', () => {
+      $('#overlay').fadeOut();
+      $('#animal').fadeOut();
+    });
+
+    closed_btn3.addEventListener('click', () => {
+      $('#overlay').fadeOut();
+      $('#plant').fadeOut();
+    });
+
+    closed_btn4.addEventListener('click', () => {
+      $('#overlay').fadeOut();
+      $('#manual').fadeOut();
+    });
+
+    closed_btn5.addEventListener('click', () => {
+      $('#overlay').fadeOut();
+      $('#opendata').fadeOut();
+    });
+
+  </script>
+
+  <!-- Facebookシェアボタン -->
+  <div id="fb-root"></div>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/ja_JP/sdk.js#xfbml=1&version=v19.0"
+    nonce="Pm3nh7PB"></script>
+
+  <!-- Google tag (gtag.js) -->
+  <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-MPP84V2NHB"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-MPP84V2NHB');
+  </script>
+
+</body>
+
+</html>
