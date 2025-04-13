@@ -85,6 +85,19 @@
       width: 250px;
       border-radius: 5em;
       cursor: pointer;
+      background: rgba(0, 0, 0, .5);
+    }
+
+    .menu1 {
+      position: relative;
+      left: -25px;
+      color: #ff0;
+    }
+
+    .menu2 {
+      position: relative;
+      right: -25px;
+      color: #ff0;
     }
 
     .menu3 {
@@ -455,20 +468,31 @@
       <div id="square5"></div>
     </div>
 
-    <div class="nav_button py-3 text-xl beginner"><span class="menu1"><i class="fa-regular fa-bookmark"></i></span>
-      トレーニング<span class="menu2"><i class="fa-regular fa-user"></i></span>
+    <div class="nav_button py-3 text-xl beginner">
+      <span class="menu1"><i class="fa-regular fa-clipboard"></i></span>
+      市区町村選択
+      <span class="menu2"><i class="fa-regular fa-file"></i></span>
     </div>
 
-    <div class="nav_button py-3 mt-5 text-xl manual menu2"><span class="menu3"><i
-          class="fa-regular fa-note-sticky"></i></span>
-      使 い 方<span class="menu4"><i class="fa-regular fa-clipboard"></i></span>
+    <div class="nav_button py-3 text-xl beginner mt-5">
+      <span class="menu1"><i class="fa-solid fa-gear"></i></span>
+      トレーニング
+      <span class="menu2"><i class="fa-regular fa-square-caret-right"></i></span>
     </div>
 
-    <div class="nav_button py-3 mt-5 text-xl opendata menu2"><span class="menu5"><i
-          class="fa-solid fa-circle-info"></i></span>オープンデータ<span class="menu6"><i
-          class="fa-solid fa-database"></i></span></div>
+    <div class="nav_button py-3 mt-5 text-xl manual">
+      <span class="menu3"><i class="fa-regular fa-bookmark"></i></span>
+      使 い 方<span class="menu4">
+        <span><i class="fa-regular fa-user"></i></span>
+    </div>
 
-    <img class="mt-10 mb-8" src="./qr.png" alt="QR画像">
+    <div class="nav_button py-3 mt-5 text-xl opendata">
+      <span class="menu5"><i class="fa-solid fa-circle-info"></i></span>
+      オープンデータ
+      <span class="menu6"><i class="fa-solid fa-database"></i></span>
+    </div>
+
+    <img class="mt-10 mb-8" src="./images/qr.jpg" alt="QR画像">
 
     <div class="fb-share-button" data-href="https://linkevery2s.github.io/emergency-aed/" data-layout="button_count"
       data-size="small"></div>
