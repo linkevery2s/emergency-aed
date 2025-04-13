@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html lang="ja">
+
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset='UTF-8' name='viewport'
+    content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'>
+  <meta name="author" content="Saito Hitoshi">
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #000;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+
+    .textScreen {
+      font-family: "Meiryo", "Hiragino Maru Gothic Pro", sans-serif;
+      margin: 70vh .2em .2em .2em;
+      border: 3px solid #ffffff;
+      background-color: rgba(0,0,0,.5);
+      border-radius: 0.3em;
+      padding: .8em;
+      height: 90px;
+      overflow-y: scroll;
+      font-size: 1em !important;
+      bottom: 0 !important;
+      transform: translate(0%, 0%);
+    }
+  </style>
+  <title>出生数</title>
+
+
+</head>
+
+<body>
+  <script type="module">
+    import { bg, show } from "https://js.sabae.cc/egadv.js";
+
+    /* 背景画像変更 */
+    document.body.style.backgroundImage = "url(./images/road.jpg)";
+
+    const n = await show("日本の1日の出生数は3,000人より多い?", "は　い", "いいえ");
+
+    await show(n);
+    if (n == "は　い") {
+      await show("不正解。2,112人です。");
+    } else {
+      await show("正解！2,112人です。");
+    }
+
+    await show("思ったよりも少ないな...");
+
+    await show("日本の「少子化対策」について、考えていかないと...");
+
+    await show("日本の人口動態について、知識が備わリました。");
+
+    await show("「よし！次の間に行こう！」");
+
+    await show("END");
+
+  </script>
+
+</body>
+
+</html>
