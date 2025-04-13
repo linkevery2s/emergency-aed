@@ -148,10 +148,7 @@
       z-index: 2;
     }
 
-    #beginner,
     #manual,
-    #animal,
-    #plant,
     #opendata {
       display: none;
       height: 95%;
@@ -160,19 +157,17 @@
       position: fixed;
       top: 50%;
       transform: translate(-50%, -50%);
-      background: rgba(255, 255, 255, .9);
+      background: rgba(0, 0, 0, .7);
       width: 95%;
       max-width: 600px;
       z-index: 11;
       padding: .3em;
       border-radius: .3em;
+      border: 5px double #ffffff;
     }
 
     #closed-btn,
-    #closed-btn2,
-    #closed-btn3,
-    #closed-btn4,
-    #closed-btn5 {
+    #closed-btn2 {
       position: absolute;
       right: 4px;
       color: #ffffff;
@@ -185,10 +180,7 @@
     }
 
     #closed-btn:hover,
-    #closed-btn2:hover,
-    #closed-btn3:hover,
-    #closed-btn4:hover,
-    #closed-btn5:hover {
+    #closed-btn2:hover {
       background: #ffffff;
       color: #1e50a2;
       border: 1px solid #1e50a2;
@@ -468,13 +460,7 @@
       <div id="square5"></div>
     </div>
 
-    <div class="nav_button py-3 text-xl beginner">
-      <span class="menu1"><i class="fa-regular fa-clipboard"></i></span>
-      市区町村選択
-      <span class="menu2"><i class="fa-regular fa-file"></i></span>
-    </div>
-
-    <div class="nav_button py-3 text-xl beginner mt-5">
+    <div class="nav_button py-3 text-xl training mt-5">
       <span class="menu1"><i class="fa-solid fa-gear"></i></span>
       トレーニング
       <span class="menu2"><i class="fa-regular fa-square-caret-right"></i></span>
@@ -513,56 +499,30 @@
   <!-- ポップアップ用のoverlay -->
   <div id="overlay"></div>
 
-  <div id="beginner" class="text-center"><span id="closed-btn" class="py-2 px-3 text-xs">閉じる</span>
-    <iframe src="./beginner.html" width="100%" height="100%" border="0"></iframe>
+  <div id="manual" class="text-center"><span id="closed-btn" class="py-2 px-3 text-xs">閉じる</span>
+    aaaaa
   </div>
 
-  <div id="manual" class="text-center"><span id="closed-btn4" class="py-2 px-3 text-xs">閉じる</span>
-    <iframe src="./manual.html" width="100%" height="100%" border="0"></iframe>
+  <div id="opendata" class="text-center"><span id="closed-btn2" class="py-2 px-3 text-xs">閉じる</span>
+    aaa
   </div>
-
-  <div id="animal" class="text-center"><span id="closed-btn2" class="py-2 px-3 text-xs">閉じる</span>
-    <iframe src="./animal.html" width="100%" height="100%" border="0"></iframe>
-  </div>
-
-  <div id="plant" class="text-center"><span id="closed-btn3" class="py-2 px-3 text-xs">閉じる</span>
-    <iframe src="./plant.html" width="100%" height="100%" border="0"></iframe>
-  </div>
-
-  <div id="opendata" class="text-center"><span id="closed-btn5" class="py-2 px-3 text-xs">閉じる</span>
-    <iframe src="./opendata.html" width="100%" height="100%" border="0"></iframe>
-  </div>
-
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
   <script type="module">
 
     /* メニューポップアップ表示 */
-    const beginner_btn = document.querySelector('.beginner');
+    const training_btn = document.querySelector('.training');
     const manual_btn = document.querySelector('.manual');
     const animal_btn = document.querySelector('.animal');
     const plant_btn = document.querySelector('.plant');
     const opendata_btn = document.querySelector('.opendata');
 
-    beginner_btn.addEventListener('click', () => {
-      $('#overlay').fadeIn();
-      $('#beginner').fadeIn();
+    training_btn.addEventListener('click', () => {
+      location.href = "./novel.html";
     });
 
     manual_btn.addEventListener('click', () => {
       $('#overlay').fadeIn();
       $('#manual').fadeIn();
-    });
-
-    animal_btn.addEventListener('click', () => {
-      $('#overlay').fadeIn();
-      $('#animal').fadeIn();
-    });
-
-    plant_btn.addEventListener('click', () => {
-      $('#overlay').fadeIn();
-      $('#plant').fadeIn();
     });
 
     opendata_btn.addEventListener('click', () => {
@@ -573,42 +533,20 @@
     const overlay = document.querySelector('#overlay');
     const closed_btn = document.querySelector("#closed-btn");
     const closed_btn2 = document.querySelector("#closed-btn2");
-    const closed_btn3 = document.querySelector("#closed-btn3");
-    const closed_btn4 = document.querySelector("#closed-btn4");
-    const closed_btn5 = document.querySelector("#closed-btn5");
-
 
     overlay.addEventListener('click', () => {
       $('#overlay').fadeOut();
-      $('#animal').fadeOut();
-      $('#beginner').fadeOut();
       $('#manual').fadeOut();
-      $('#plant').fadeOut();
       $('#opendata').fadeOut();
 
     });
 
     closed_btn.addEventListener('click', () => {
       $('#overlay').fadeOut();
-      $('#beginner').fadeOut();
-    });
-
-    closed_btn2.addEventListener('click', () => {
-      $('#overlay').fadeOut();
-      $('#animal').fadeOut();
-    });
-
-    closed_btn3.addEventListener('click', () => {
-      $('#overlay').fadeOut();
-      $('#plant').fadeOut();
-    });
-
-    closed_btn4.addEventListener('click', () => {
-      $('#overlay').fadeOut();
       $('#manual').fadeOut();
     });
 
-    closed_btn5.addEventListener('click', () => {
+    closed_btn2.addEventListener('click', () => {
       $('#overlay').fadeOut();
       $('#opendata').fadeOut();
     });
