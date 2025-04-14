@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>シンプルなノベルゲーム</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #222;
+      color: #fff;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    #game-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 20px;
+      box-sizing: border-box;
+      background: url('./images/road.jpg') no-repeat center center;
+      background-size: cover;
+    }
+    #text-box {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 1.2em;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+    #next-button {
+      align-self: flex-end;
+      background: #fff;
+      color: #222;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1em;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #next-button:hover {
+      background: #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="text-box"></div>
+    <button id="next-button">次へ</button>
+  </div>
+
+  <script>
+    // ストーリーのテキストを配列で定義（シーンやセリフは必要に応じて追加・変更してください）
+    const story = [
+      "ここはとある世界。あなたは新たな冒険の旅に出るところです。",
+      "夜空に輝く星々を見上げながら、心は期待と不安で満たされる。",
+      "突然、目の前に不思議な光が現れ、あなたはその光に引き寄せられる。",
+      "光の中から声が聞こえる…『勇者よ、我々の世界を救うために来てくれたのですね』",
+      "さあ、新たな物語が始まります。"
+    ];
+
+    let currentIndex = 0;
+    
+    // テキストボックスとボタンの取得
+    const textBox = document.getElementById("text-box");
+    const nextButton = document.getElementById("next-button");
+
+    // ストーリーを初期表示
+    function displayStory() {
+      // 現在のテキストを表示
+      if (currentIndex < story.length) {
+        textBox.textContent = story[currentIndex];
+      } else {
+        // ストーリー終了時の処理
+        textBox.textContent = "これでストーリーは終わりです。リロードして最初から再生できます。";
+        nextButton.disabled = true;  // ボタンを無効にする
+      }
+    }
+
+    // ボタンクリック時のイベント
+    nextButton.addEventListener("click", function() {
+      currentIndex++;
+      displayStory();
+    });
+
+    // 初期表示
+    displayStory();
+  </script>
+</body>
+</html>
