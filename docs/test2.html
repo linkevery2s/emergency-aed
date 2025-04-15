@@ -80,6 +80,8 @@
         let currentIndex = 0;
         const storyText = document.getElementById("story-text");
         const nextButton = document.getElementById("next-button");
+        const textbox = document.getElementById("text-box");
+        
         let isTyping = false;
 
         function typeText(text, callback) {
@@ -111,6 +113,12 @@
         }
 
         nextButton.addEventListener("click", () => {
+            if (!isTyping) {
+                showNext();
+            }
+        });
+        
+        textbox.addEventListener("click", () => {
             if (!isTyping) {
                 showNext();
             }
