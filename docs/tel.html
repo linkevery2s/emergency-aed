@@ -112,6 +112,7 @@
     <div class="call-button" onclick="makeCall()">
       <i class="fas fa-phone"></i>
     </div>
+    あくまでも「訓練ゲーム」です。実際に電話は繋がりません。
   </div>
 
   <script>
@@ -122,12 +123,12 @@
 
     function makeCall() {
       const number = display.textContent;
-      if (number) {
+      if (number == "119") {
         alert("電話をかけます: " + number);
         // 実際の動作例（telリンク）:
          window.location.href = "./novel2.html";
       } else {
-        alert("電話番号が入力されていません");
+        alert("番号が間違っています。");
       }
     }
   </script>
