@@ -1,97 +1,177 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
-    <meta charset="UTF-8" name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>シンプルなノベルゲーム</title>
+
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="UTF-8" name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>ノベルゲーム（キャラ立ち絵付き）</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
       background: #222;
       color: #fff;
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-family: 'Helvetica Neue', sans-serif;
+      height: 100vh;
       display: flex;
       flex-direction: column;
-      height: 100vh;
     }
+
     #game-container {
       flex: 1;
+      position: relative;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
       padding: 20px;
-      box-sizing: border-box;
-      background: url('./images/road.jpg') no-repeat center center;
+      background: #000 url('./images/background.jpg') no-repeat center center;
       background-size: cover;
+      overflow: hidden;
     }
+
+    #character {
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      max-height: 60%;
+      pointer-events: none;
+    }
+
     #text-box {
       background: rgba(0, 0, 0, 0.7);
       padding: 20px;
       border-radius: 10px;
       font-size: 1.2em;
-      line-height: 1.5;
-      margin-bottom: 10px;
+      position: relative;
     }
+
     #next-button {
-      align-self: flex-end;
-      background: #fff;
-      color: #222;
-      border: none;
-      padding: 10px 20px;
-      font-size: 1em;
+      float: right;
+      margin-top: 10px;
+      padding: 8px 16px;
       border-radius: 5px;
+      background: #fff;
+      color: #000;
+      border: none;
       cursor: pointer;
-      transition: background 0.3s;
     }
-    #next-button:hover {
-      background: #ddd;
+
+    #next-indicator {
+      display: inline-block;
+      margin-left: 10px;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0;
+      }
     }
   </style>
 </head>
+
 <body>
   <div id="game-container">
-    <div id="text-box"></div>
-    <button id="next-button">次へ</button>
+    <img id="character" src="" alt="キャラクター" style="display: none;">
+    <div id="text-box">
+      <div id="story-text"></div>
+      <button id="next-button" disabled>次へ</button>
+    </div>
   </div>
 
   <script>
-    // ストーリーのテキストを配列で定義（シーンやセリフは必要に応じて追加・変更してください）
     const story = [
-      "ここはとある世界。あなたは新たな冒険の旅に出るところです。",
-      "夜空に輝く星々を見上げながら、心は期待と不安で満たされる。",
-      "突然、目の前に不思議な光が現れ、あなたはその光に引き寄せられる。",
-      "光の中から声が聞こえる…『勇者よ、我々の世界を救うために来てくれたのですね』",
-      "さあ、新たな物語が始まります。"
+      {
+        text: "あなたの前に少女が現れた。",
+        character: "./images/test.png"
+      },
+      {
+        text: "少女「はじめまして。あなたが勇者様ですか？」",
+        character: "./images/test2.png"
+      },
+      {
+        text: "あなたはうなずいた。",
+        character: null // キャラを非表示にしたい場合
+      },
+      {
+        text: "少女「良かった！ようやく会えましたね！」",
+        character: "./images/test.png"
+      }
     ];
 
     let currentIndex = 0;
-    
-    // テキストボックスとボタンの取得
-    const textBox = document.getElementById("text-box");
+    const storyText = document.getElementById("story-text");
     const nextButton = document.getElementById("next-button");
+    const characterImg = document.getElementById("character");
+    let isTyping = false;
+    let indicator;
 
-    // ストーリーを初期表示
-    function displayStory() {
-      // 現在のテキストを表示
+    function typeText(text, callback) {
+      let i = 0;
+      storyText.textContent = "";
+      isTyping = true;
+      nextButton.disabled = true;
+
+      if (indicator) {
+        indicator.remove();
+        indicator = null;
+      }
+
+      const interval = setInterval(() => {
+        storyText.textContent += text.charAt(i);
+        i++;
+        if (i >= text.length) {
+          clearInterval(interval);
+          isTyping = false;
+          nextButton.disabled = false;
+          showIndicator();
+          if (callback) callback();
+        }
+      }, 40);
+    }
+
+    function showIndicator() {
+      indicator = document.createElement("span");
+      indicator.id = "next-indicator";
+      indicator.textContent = "▶︎";
+      storyText.appendChild(indicator);
+    }
+
+    function showNext() {
       if (currentIndex < story.length) {
-        textBox.textContent = story[currentIndex];
+        const { text, character } = story[currentIndex];
+
+        // キャラクター表示/非表示
+        if (character) {
+          characterImg.src = character;
+          characterImg.style.display = "block";
+        } else {
+          characterImg.style.display = "none";
+        }
+
+        typeText(text);
+        currentIndex++;
       } else {
-        // ストーリー終了時の処理
-        textBox.textContent = "これでストーリーは終わりです。リロードして最初から再生できます。";
-        nextButton.disabled = true;  // ボタンを無効にする
+        storyText.textContent = "これでストーリーは終わりです。";
+        characterImg.style.display = "none";
+        nextButton.style.display = "none";
       }
     }
 
-    // ボタンクリック時のイベント
-    nextButton.addEventListener("click", function() {
-      currentIndex++;
-      displayStory();
+    nextButton.addEventListener("click", () => {
+      if (!isTyping) {
+        showNext();
+      }
     });
 
-    // 初期表示
-    displayStory();
+    showNext();
   </script>
 </body>
+
 </html>
