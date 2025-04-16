@@ -2,41 +2,27 @@
 <html lang="ja">
 
 <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
-  <meta charset="UTF-8" name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>ノベルゲーム（キャラ立ち絵付き）</title>
+    <meta charset="UTF-8" name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>選択肢付きノベルゲーム</title>
   <style>
     body {
       margin: 0;
       background: #222;
       color: #fff;
-      font-family: 'Helvetica Neue', sans-serif;
+      font-family: sans-serif;
       height: 100vh;
       display: flex;
       flex-direction: column;
     }
-
     #game-container {
       flex: 1;
-      position: relative;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
       padding: 20px;
-      background: #000 url('./images/background.jpg') no-repeat center center;
-      background-size: cover;
-      overflow: hidden;
+      background: #000;
     }
-
-    #character {
-      position: absolute;
-      top: 100px;
-      left: 50%;
-      transform: translateX(-50%);
-      max-height: 60%;
-      pointer-events: none;
-    }
-
     #text-box {
       background: rgba(0, 0, 0, 0.7);
       padding: 20px;
@@ -44,9 +30,10 @@
       font-size: 1.2em;
       position: relative;
     }
-
+    #story-text {
+      white-space: pre-wrap;
+    }
     #next-button {
-      float: right;
       margin-top: 10px;
       padding: 8px 16px;
       border-radius: 5px;
@@ -55,86 +42,63 @@
       border: none;
       cursor: pointer;
     }
-
+    .choice-button {
+      margin-top: 10px;
+      margin-right: 10px;
+      padding: 8px 16px;
+      background: #333;
+      color: #fff;
+      border: 1px solid #888;
+      border-radius: 5px;
+      cursor: pointer;
+    }
     #next-indicator {
       display: inline-block;
       margin-left: 10px;
       animation: blink 1s infinite;
     }
-
     @keyframes blink {
-
-      0%,
-      100% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0;
-      }
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
     }
   </style>
 </head>
-
 <body>
   <div id="game-container">
-    <img id="character" src="" alt="キャラクター" style="display: none;">
     <div id="text-box">
       <div id="story-text"></div>
-      <button id="next-button" disabled>次へ</button>
+      <div id="choices"></div>
+      <button id="next-button" style="display: none;">次へ</button>
     </div>
   </div>
 
   <script>
-    const story = [
-      {
-        text: "あなたの前に少女が現れた。",
-        character: "./images/test.png"
-      },
-      {
-        text: "少女「はじめまして。あなたが勇者様ですか？」",
-        character: "./images/test2.png"
-      },
-      {
-        text: "あなたはうなずいた。",
-        character: null // キャラを非表示にしたい場合
-      },
-      {
-        text: "少女「良かった！ようやく会えましたね！」",
-        character: "./images/test.png"
-      }
-    ];
+    const scenes = {
+      intro: [
+        { text: "あなたは分かれ道に立っている。" },
+        { 
+          choices: [
+            { text: "左の道を進む", next: "leftPath" },
+            { text: "右の道を進む", next: "rightPath" }
+          ]
+        }
+      ],
+      leftPath: [
+        { text: "左の道には静かな森が広がっていた。" },
+        { text: "鳥のさえずりが心地よい。" }
+      ],
+      rightPath: [
+        { text: "右の道には不気味な洞窟が待ち構えていた。" },
+        { text: "あなたは足をすくませながら中へと入っていく…" }
+      ]
+    };
 
+    let currentScene = 'intro';
     let currentIndex = 0;
     const storyText = document.getElementById("story-text");
     const nextButton = document.getElementById("next-button");
-    const characterImg = document.getElementById("character");
-    let isTyping = false;
+    const choicesDiv = document.getElementById("choices");
     let indicator;
-
-    function typeText(text, callback) {
-      let i = 0;
-      storyText.textContent = "";
-      isTyping = true;
-      nextButton.disabled = true;
-
-      if (indicator) {
-        indicator.remove();
-        indicator = null;
-      }
-
-      const interval = setInterval(() => {
-        storyText.textContent += text.charAt(i);
-        i++;
-        if (i >= text.length) {
-          clearInterval(interval);
-          isTyping = false;
-          nextButton.disabled = false;
-          showIndicator();
-          if (callback) callback();
-        }
-      }, 40);
-    }
 
     function showIndicator() {
       indicator = document.createElement("span");
@@ -144,34 +108,53 @@
     }
 
     function showNext() {
-      if (currentIndex < story.length) {
-        const { text, character } = story[currentIndex];
+      const scene = scenes[currentScene];
+      const item = scene[currentIndex];
 
-        // キャラクター表示/非表示
-        if (character) {
-          characterImg.src = character;
-          characterImg.style.display = "block";
-        } else {
-          characterImg.style.display = "none";
-        }
+      storyText.textContent = "";
+      if (indicator) {
+        indicator.remove();
+        indicator = null;
+      }
 
-        typeText(text);
+      choicesDiv.innerHTML = "";
+      nextButton.style.display = "none";
+
+      if (!item) {
+        storyText.textContent = "物語はここで終わりです。";
+        return;
+      }
+
+      if (item.text) {
+        let i = 0;
+        const interval = setInterval(() => {
+          storyText.textContent += item.text.charAt(i);
+          i++;
+          if (i >= item.text.length) {
+            clearInterval(interval);
+            showIndicator();
+            nextButton.style.display = "inline-block";
+          }
+        }, 40);
         currentIndex++;
-      } else {
-        storyText.textContent = "これでストーリーは終わりです。";
-        characterImg.style.display = "none";
-        nextButton.style.display = "none";
+      } else if (item.choices) {
+        item.choices.forEach(choice => {
+          const btn = document.createElement("button");
+          btn.className = "choice-button";
+          btn.textContent = choice.text;
+          btn.onclick = () => {
+            currentScene = choice.next;
+            currentIndex = 0;
+            showNext();
+          };
+          choicesDiv.appendChild(btn);
+        });
       }
     }
 
-    nextButton.addEventListener("click", () => {
-      if (!isTyping) {
-        showNext();
-      }
-    });
+    nextButton.addEventListener("click", showNext);
 
     showNext();
   </script>
 </body>
-
 </html>
