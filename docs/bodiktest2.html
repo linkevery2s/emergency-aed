@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>BODIK API</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
+    <script type="text/javascript">
+        let map = null;
+        function init() {
+            try {
+                map = L.map('map', { zoomControl: false });
+                //  指定された緯度経度を中心とした地図
+                let lat = 33.59334325082392;
+                let lon = 130.35598920962553;
+                let center = [lat, lon];
+                map.setView(center, 14);
+
+                //地理院地図の標準地図タイル
+                let gsi = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png',
+                    { attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>" });
+                gsi.addTo(map);
+
+                showMarker(lat, lon);
+                map.on('click', onMapClick);
+            } catch(error) {
+                alert('init:' + error);
+            }
+        }
+
+        function onMapClick(e) {
+            try {
+                let latlng = e.latlng;
+                let lat = latlng.lat;
+                let lon = latlng.lng;
+                showMarker(lat, lon);
+            } catch(error) {
+                alert('onMapClick:' + error);
+            }
+        }
+
+        function showMarker(lat, lon) {
+            try {
+                let api_server = 'https://wapi.bodik.jp';
+                let api = 'aed';
+                let distance = 20000;
+                let maxResults = 100;
+                let api_url = `${api_server}/${api}?select_type=geometry&lat=${lat}&lon=${lon}&distance=${distance}&maxResults=${maxResults}`;
+                fetch(api_url)
+                .then(response => response.json())
+                .then(data => {
+                    if ('resultsets' in data) {
+                        let resultsets = data['resultsets'];
+                        if ('features' in resultsets) {
+                            let features = resultsets['features'];
+                            for (let feature of features) {
+                                let properties = feature['properties'];
+                                let popup = L.popup().setContent(properties['name']);
+
+                                let geometry = feature['geometry'];
+                                let location = geometry['coordinates'];
+                                let marker = L.marker([location[1], location[0]]).addTo(map);
+                                marker.bindPopup(popup);
+                            }
+                        } else {
+                            alert('no "features" in data');
+                        }
+                    } else {
+                        alert('no "resultsets" in data');
+                    }
+                });
+            } catch(error) {
+                alert('showMarker:' + error);
+            }
+        } 
+    </script>
+
+</head>
+
+<body onload="init()">
+    <h2>BODIK API program #2</h2>
+    <div class="map" id="map" style="width:800px;height:600px"></div>
+</body>
+
+</html>

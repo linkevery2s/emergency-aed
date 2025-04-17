@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>BODIK API</title>
+    <script type="text/javascript">
+        let api_server = 'https://wapi.bodik.jp';
+        let api = 'aed';
+        let api_url = `${api_server}/${api}`;
+        fetch(api_url)
+        .then(response => response.json())
+        .then(data => {
+            let output = document.getElementById('output');
+            output.innerHTML = JSON.stringify(data, null, 2);
+        });
+    </script>
+</head>
+
+<body>
+    <h2>BODIK API program #1</h2>
+    <pre id="output"></pre>
+</body>
+
+</html>

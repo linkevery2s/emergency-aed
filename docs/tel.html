@@ -2,12 +2,11 @@
 <html lang="ja">
 
 <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
-    <meta charset="UTF-8" name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta charset="UTF-8" name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>電話をかける場面</title>
 
   <link href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" rel="stylesheet">
-  <script src="https://use.fontawesome.com/releases/v5.6.3/js/all.js"></script>
 
   <style>
     body {
@@ -35,7 +34,7 @@
       padding: 20px 10px;
       background-color: white;
       border-radius: 12px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       margin-bottom: 20px;
       min-height: 50px;
       width: 100%;
@@ -57,13 +56,17 @@
       font-size: 1.8rem;
       text-align: center;
       line-height: 80px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       user-select: none;
       transition: background-color 0.2s;
     }
 
     .key:active {
       background-color: #eee;
+    }
+
+    .note{
+      margin-top: 1em;
     }
 
     .call-button {
@@ -92,6 +95,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <div class="display" id="display"></div>
@@ -105,28 +109,33 @@
       <div class="key" onclick="press('7')">7</div>
       <div class="key" onclick="press('8')">8</div>
       <div class="key" onclick="press('9')">9</div>
-      <div class="key" onclick="press('*')">*</div>
+      <div class="key" onclick="press('*')">＊</div>
       <div class="key" onclick="press('0')">0</div>
-      <div class="key" onclick="press('#')">#</div>
+      <div class="key" onclick="press('#')">＃</div>
     </div>
+
     <div class="call-button" onclick="makeCall()">
       <i class="fas fa-phone"></i>
     </div>
-    あくまでも「訓練ゲーム」です。実際に電話は繋がりません。
+
+    <span class="note">あくまでも「訓練ゲーム」です。実際に電話は繋がりません。</span>
+
   </div>
 
-  <script>
+  <script type="module">
+
     const display = document.getElementById("display");
-    function press(num) {
+
+    window.press = (num) => {
       display.textContent += num;
     }
 
-    function makeCall() {
+    window.makeCall = () => {
       const number = display.textContent;
       if (number == "119") {
-        alert("電話をかけます: " + number);
-        // 実際の動作例（telリンク）:
-         window.location.href = "./novel2.html";
+
+        window.location.href = "./novel2.html";
+
       } else {
         alert("番号が間違っています。");
         display.textContent = "";
@@ -134,4 +143,5 @@
     }
   </script>
 </body>
+
 </html>
