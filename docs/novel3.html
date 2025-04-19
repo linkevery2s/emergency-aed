@@ -4,7 +4,7 @@
 <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
     <meta charset="UTF-8" name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>AEDを持ってきた後</title>
+    <title>AEDを探しに行こう！</title>
     <style>
         html,
         body {
@@ -83,23 +83,19 @@
     <script type="module">
         const story = [
             {
-                text: "AEDを持ってきました！",
+                text: "［Aさん］AEDを探してくるように言われたけど、どこにあるんだろう？",
                 character: null // 画像を非表示にしたい場合
             },
             {
-                text: "夜空に輝く星々を見上げながら、心は期待と不安で満たされる。",
-                character: "./images/test.png"
+                text: "［Aさん］そういえば、AEDマップのアプリを入れていたな。",
+                character: null
             },
             {
-                text: "突然、目の前に不思議な光が現れ、あなたはその光に引き寄せられる。",
-                character: "./images/test2.png"
+                text: "Aさんは、スマートフォンからアプリを起動した。",
+                character: null
             },
             {
-                text: "光の中から声が聞こえる…『勇者よ、我々の世界を救うために来てくれたのですね』",
-                character: "./images/test.png"
-            },
-            {
-                text: "AEDを探しに行きましょう！",
+                text: "［Aさん］AEDを探しに行こう！",
                 character: null
             }
         ];
@@ -162,8 +158,8 @@
                 currentIndex++;
             } else {
 
-                storyText.textContent = "これでストーリーは終わりです。";
                 characterImg.style.display = "none";
+                location.href = "./map.html";
 
             }
         }

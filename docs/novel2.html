@@ -4,7 +4,7 @@
 <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
     <meta charset="UTF-8" name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>１１９通報後</title>
+    <title>１１９番通報</title>
     <style>
         html,
         body {
@@ -83,23 +83,59 @@
     <script type="module">
         const story = [
             {
-                text: "119番通報、完了",
-                character: null // 画像を非表示にしたい場合
+                text: "［通信司令室］はい、119番です。火事ですか？救急ですか？",
+                character: "./images/test.png" // 画像を非表示にしたい場合
             },
             {
-                text: "夜空に輝く星々を見上げながら、心は期待と不安で満たされる。",
+                text: "［あなた］救急です。",
                 character: "./images/test.png"
             },
             {
-                text: "突然、目の前に不思議な光が現れ、あなたはその光に引き寄せられる。",
-                character: "./images/test2.png"
-            },
-            {
-                text: "光の中から声が聞こえる…『勇者よ、我々の世界を救うために来てくれたのですね』",
+                text: "［通信司令室］今いる場所を教えてください。",
                 character: "./images/test.png"
             },
             {
-                text: "AEDを探しに行きましょう！",
+                text: "［あなた］住所は・・・・・。近くに・・・があります。",
+                character: "./images/test.png"
+            },
+            {
+                text: "［通信司令室］分かりました。救急車を向かわせます。どうされましたか？",
+                character: "./images/test.png"
+            },
+            {
+                text: "［あなた］人が倒れています。呼びかけても反応ありません。",
+                character: "./images/test.png"
+            },
+            {
+                text: "［通信司令室］呼吸はありますか？胸とお腹は動いていますか？",
+                character: "./images/test.png"
+            },
+            {
+                text: "［あなた］よく...分かりません。",
+                character: "./images/test.png"
+            },
+            {
+                text: "［通信司令室］心停止の可能性があります。心配蘇生のやり方は分かりますか？",
+                character: "./images/test.png"
+            },
+            {
+                text: "［あなた］経験がないです。",
+                character: "./images/test.png"
+            },
+            {
+                text: "［通信司令室］これから胸骨圧迫の方法を説明します。スマートフォンをスピーカーモードにして、そばに置いてください。",
+                character: "./images/test.png"
+            },
+            {
+                text: "通信司令室より、胸骨圧迫の説明を受けた。",
+                character: "./images/test.png"
+            },
+            {
+                text: "助かることを信じて胸骨圧迫を続けた。やりながら、Aさんのことを思い浮かべていた。",
+                character: "./images/test.png"
+            },      
+            {
+                text: "［あなた］...AEDは見つかったのかな？",
                 character: null
             }
         ];
@@ -163,7 +199,7 @@
             } else {
 
                 characterImg.style.display = "none";
-                location.href = "./map.html";
+                location.href = "./novel3.html";
 
             }
         }
