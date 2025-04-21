@@ -1,0 +1,55 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+body {
+  font-family: "Source Han Serif JP", "Noto Serif CJK JP", "游明朝体", "Yu Mincho", YuMincho, serif;
+}
+
+#container {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.title {
+  right: 0;
+  top: 0;
+  position: fixed;
+  background: rgba(255, 255, 255, .8);
+  z-index: 5;
+}
+
+.basic {
+  right: 0;
+  top: 52px;
+  position: fixed;
+  background: rgba(255, 255, 255, .8);
+  z-index: 5;
+  cursor: pointer;
+}
+
+.photo {
+  right: 0;
+  top: 88px;
+  position: fixed;
+  background: rgba(255, 255, 255, .8);
+  z-index: 5;
+  cursor: pointer;
+}
+
+.deck-tooltip {
+  font-family: Helvetica, Arial, sans-serif;
+  padding: 8px !important;
+  color: #ffffff !important;
+  background: #192f60 !important;
+  width: 230px;
+  font-size: .8em;
+  opacity: 0.8;
+  border: 1px solid #ffffff;
+}

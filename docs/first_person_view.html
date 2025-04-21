@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="UTF-8" name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>first person view</title>
+
+  <script src="https://unpkg.com/deck.gl@^8.9.0/dist.min.js"></script>
+  <script src="https://unpkg.com/@loaders.gl/3d-tiles@^2.3.0/dist/dist.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"
+    integrity="sha512-GWzVrcGlo0TxTRvz9ttioyYJ+Wwk9Ck0G81D+eO63BaqHaJ3YZX9wuqjwgfcV/MrB2PhaVX9DkYVhbFpStnqpQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+  <link href='./rotate.css' rel='stylesheet' />
+  <link href='./pointmap.css' rel='stylesheet' />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+
+  <style>
+    .attribution {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      z-index: 9;
+      padding: 2px 4px;
+      background-color: rgba(255, 255, 255, 0.5);
+      font-size: 11px;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+
+<body>
+
+  <span class="side_menu">
+    <div class="button" id="button"><i class="fa-solid fa-rotate"></i></div>
+    <div class="button2" id="button2"><i class="fa-solid fa-lg fa-stop"></i></div>
+  </span>
+
+  <div class="title p-3"><span id="title"></span></div>
+
+  <div class="attribution">
+    © <a href="https://www.openstreetmap.org/about/" target="_blank">OpenStreetMap</a> contributors
+  </div>
+
+  <script type="module">
+
+    import { Vector3 } from 'https://cdn.jsdelivr.net/npm/math.gl@4.0.0/+esm';
+
+    onload = async () => {
+
+      const { DeckGL, Tile3DLayer, FirstPersonView, TileLayer, BitmapLayer, COORDINATE_SYSTEM, LinearInterpolator, ScatterplotLayer } = deck;
+
+      const url_hash = location.hash;
+
+      const title = document.querySelector("#title");
+
+      let year;
+
+      let data;
+
+      /*if (url_hash === "") {
+        data = "";
+        title = "";
+        console.log("#年数をURLに入れてください。");
+
+      } else {
+        year = url_hash.split("#")[1];
+
+        data = await d3.csv("./" + year + '/all.csv');
+
+        title.innerHTML = year + ".first person view";
+
+      }
+        */
+
+      const tilelayer = new TileLayer({
+        data: 'https://tile.openstreetmap.jp/{z}/{x}/{y}.png',
+        minZoom: 0,
+        maxZoom: 19,
+        tileSize: 256,
+
+        renderSubLayers: props => {
+          const {
+            bbox: { west, south, east, north }
+          } = props.tile;
+
+          return new BitmapLayer(props, {
+            data: null,
+            image: props.data,
+            _imageCoordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            bounds: [west, south, east, north]
+          });
+        }
+      });
+
+      const layer1 = new Tile3DLayer({
+        id: 'tile3dlayer1',
+        pointSize: 1,
+        data: 'https://assets.cms.plateau.reearth.io/assets/ad/19963b-7fb7-4db7-9ba5-37a6f858b8fc/13110_meguro-ku_pref_2023_citygml_2_op_bldg_3dtiles_13110_meguro-ku_lod1/tileset.json',
+        loader: Tiles3DLoader,
+        opacity: 0.8,
+        onTilesetLoad: (tileset) => {
+          const { cartographicCenter } = tileset;
+          const [longitude, latitude] = cartographicCenter;
+        },
+        onTileLoad: (tileHeader) => {
+          tileHeader.content.cartographicOrigin = new Vector3(
+            tileHeader.content.cartographicOrigin.x,
+            tileHeader.content.cartographicOrigin.y,
+            tileHeader.content.cartographicOrigin.z - 60,
+          );
+        },
+      });
+
+      /*const layer = new ScatterplotLayer({
+        id: 'scatterplot-layer',
+        data,
+        pickable: true,
+        opacity: 0.8,
+        stroked: true,
+        filled: true,
+        radiusScale: 10,
+        radiusMinPixels: 3,
+        radiusMaxPixels: 10,
+        lineWidthMinPixels: 1,
+        getPosition: d => [Number(d.lng), Number(d.lat)],
+        getFillColor: d => [232, 57, 41],
+        getLineColor: d => [255, 255, 255]
+      });
+      
+
+      const tooltip = (d) => {
+
+        if (!d || !d.object) return null;
+        let obj = d.object;
+
+        let title;
+
+        title = obj.day + " " + obj.hh + "時" + obj.mm + "分";
+
+        const html_tr = ["<table>", title, "</table>"].join("\n");
+
+        return {
+          html: html_tr
+        };
+      };
+      */
+
+      let initialViewState = {
+        longitude: 139.699,
+        latitude: 35.64,
+        zoom: 13,
+        minZoom: 11,
+        maxZoom: 20,
+        pitch: -25,
+        bearing: 0,
+        position: [30, -90, 10]
+      };
+
+      let rotateCamera = () => {
+        initialViewState = {
+          ...initialViewState,
+          bearing: initialViewState.bearing - 10,
+          transitionDuration: 500,
+          transitionInterpolator: new LinearInterpolator(['bearing']),
+          onTransitionEnd: rotateCamera
+        };
+        deckgl.setProps({ initialViewState });
+      };
+
+      let stop = () => {
+        initialViewState = {
+          ...initialViewState,
+          bearing: initialViewState.bearing - 0.01,
+          transitionDuration: 0,
+          transitionInterpolator: new LinearInterpolator(['bearing']),
+          onTransitionEnd: stop
+        };
+        deckgl.setProps({ initialViewState });
+
+      };
+
+      const deckgl = new DeckGL({
+        views: [
+          new FirstPersonView({
+            controller: true,
+            fovy: 70,
+            // near: 0.1,
+            // far: 1000,
+          })
+        ],
+        initialViewState: initialViewState,
+        onViewStateChange: ({ viewState }) => {
+          initialViewState.longitude = viewState.longitude;
+          initialViewState.latitude = viewState.latitude;
+          initialViewState.zoom = viewState.zoom;
+          initialViewState.pitch = viewState.pitch;
+          initialViewState.bearing = viewState.bearing;
+          initialViewState.position = viewState.position;
+        },
+        controller: {
+          touchRotate: true
+        },
+        layers: [tilelayer, layer1 /*, layer */],
+        /*getTooltip: tooltip*/
+      });
+
+
+      const button = document.querySelector('.button');
+      const button2 = document.querySelector('.button2');
+      button.addEventListener('click', () => {
+        rotateCamera();
+        $("#button").hide();
+        $("#button2").show();
+      });
+
+      button2.addEventListener('click', () => {
+        stop();
+        $("#button2").hide();
+        $("#button").show();
+      });
+
+    }
+
+  </script>
+
+</body>
+
+</html>
