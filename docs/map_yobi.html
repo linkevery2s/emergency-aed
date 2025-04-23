@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+    <meta charset="UTF-8" name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>防災マップ</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+        integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+        integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+
+    <script src="https://unpkg.com/deck.gl@8.6.0/dist.min.js"></script>
+
+    <script src="https://unpkg.com/deck.gl-leaflet@1.2.1/dist/deck.gl-leaflet.min.js"></script>
+
+    <link href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" rel="stylesheet">
+    <script src="https://use.fontawesome.com/releases/v5.6.3/js/all.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-pulse-icon@0.1.0/src/L.Icon.Pulse.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/leaflet-pulse-icon@0.1.0/src/L.Icon.Pulse.min.css" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.min.js"
+        integrity="sha512-0A4MbfuZq5Au9EdpI1S5rUTXlibNBi8CuZ/X3ycwXyZiCjNzpiO9YH6EMqPgzZm6vfNCuZStBQHjnO17nIC0IQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <style>
+        html,
+        body,
+        #map {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        #pop_moji {
+            color: #ff0000;
+            font-size: 18px;
+            font-weight: bold !important;
+        }
+
+        .deck-tooltip {
+            z-index: 100 !important;
+        }
+
+        .leaflet-marker-pane {
+            z-index: 343 !important;
+        }
+
+        #statis {
+            left: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            display: none;
+            z-index: 110;
+            background: rgba(255, 255, 255, .8);
+            height: 220px;
+            border: none;
+            font-size: 0.875rem;
+            /*1px solid #0095d9;*/
+            padding: 0;
+            border-radius: .3em;
+        }
+
+        #graph {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 1em;
+        }
+
+        #closed-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            border-radius: .3em;
+            color: #ffffff;
+            background: #1e50a2;
+            cursor: pointer;
+            text-align: center;
+            padding: .3em;
+        }
+
+        #closed-btn:hover {
+            background: rgba(255, 255, 255, .8);
+            color: #1e50a2;
+            border: 1px solid #1e50a2;
+        }
+
+        @media screen and (min-width:768px) {
+            #statis {
+                font-size: 1.125rem;
+                height: 240px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <div id="statis"><span id="closed-btn">閉じる</span>
+        <div id="graph"></div>
+    </div>
+
+    <script type="module">
+
+        const map = L.map("map", {
+            center: [34.624, 135.341],
+            maxZoom: 18,
+            minZoom: 4,
+            zoomControl: false,
+            zoom: 7
+        });
+
+        L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | <a href="https://disaportal.gsi.go.jp/" target="_blank">ハザードマップポータルサイト</a>',
+        }).addTo(map);
+
+        const hash = new L.Hash(map);
+
+        let ido; let keido;
+
+        let marker = null;
+
+        let gps_get = (position) => {
+            ido = position.coords.latitude;
+            keido = position.coords.longitude;
+            map.setView([ido, keido], 15);
+
+            let pulsingIcon = L.icon.pulse({ iconSize: [12, 12], color: 'red', fillColor: 'red' });
+
+            if (map && marker) {
+                map.removeLayer(marker);
+                marker = null;
+            }
+
+            marker = L.marker([ido, keido], { icon: pulsingIcon }).addTo(map);
+
+        }
+
+        let gps_error = (error) => {
+            alert("エラーが発生したので、現在地を取得できませんでした。");
+        }
+
+        let GPS = () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(gps_get, gps_error);
+            } else {
+                alert("エラーが発生したので、現在地を取得できませんでした。");
+            }
+        }
+
+        let gps_button = L.easyButton('fa-location-arrow', function () { GPS(); }, { position: 'topleft' }).addTo(map);
+
+        let graph_show = (d) => {
+
+            if (!d || !d.object) return null;
+            let obj = d.object;
+
+            let description;
+
+            description = obj.name + "<br>" + obj.address + "<br><br><a href='./novel4.html'>ここに行く</a>";
+
+            document.getElementById("graph").innerHTML = description;
+
+            $('#statis').fadeIn();
+
+        }
+
+        const deckLayer = new DeckGlLeaflet.LeafletLayer({
+            views: [
+                new deck.MapView({
+                    repeat: true
+                })
+            ],
+            layers: [
+                new deck.ScatterplotLayer({
+                    id: 'hinanbasyo',
+                    data: 'https://raw.githubusercontent.com/linkevery2s/eye/refs/heads/main/practice/refugedata/hinanbasyo.json',
+                    pickable: true,
+                    opacity: 0.5,
+                    stroked: true,
+                    filled: true,
+                    radiusScale: 6,
+                    radiusMinPixels: 5,
+                    radiusMaxPixels: 30,
+                    lineWidthMinPixels: 1,
+                    getPosition: d => [Number(d.lng), Number(d.lat)],
+                    getRadius: d => 5,
+                    getFillColor: d => [44, 169, 225],
+                    getLineColor: d => [255, 255, 255],
+                    onClick: graph_show
+                })
+            ]
+        });
+        map.addLayer(deckLayer);
+
+        const closed_btn = document.querySelector("#closed-btn");
+
+        closed_btn.addEventListener('click', () => {
+            $('#statis').fadeOut();
+        });
+
+    </script>
+</body>
+
+</html>
